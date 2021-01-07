@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.android.synthetic.main.fragment_list.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -37,6 +39,15 @@ class ListFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_list, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val list = generateDummyList(100)
+        recycler_view.apply {
+            layoutManager = LinearLayoutManager(activity)
+            adapter = StationAdapter(list)
+        }
+    }
+
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -56,4 +67,17 @@ class ListFragment : Fragment() {
                 }
             }
     }
+
+    private fun generateDummyList(size: Int): List<StationItem> {
+        val list = ArrayList<StationItem>()
+
+        for (i in 0 until size) {
+            val item = StationItem("Item $i")
+            list += item
+        }
+
+        return list
+    }
+
+
 }

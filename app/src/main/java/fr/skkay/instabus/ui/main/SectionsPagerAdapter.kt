@@ -24,10 +24,10 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager)
     override fun getItem(position: Int): Fragment {
         var fragment: Fragment
         fragment = when (position) {
-            0 -> ListFragment()
+            0 -> ListFragment.newInstance("", "")
             1 -> MapsFragment()
             else -> {
-                ListFragment()
+                ListFragment.newInstance("", "")
             }
         }
         return fragment
