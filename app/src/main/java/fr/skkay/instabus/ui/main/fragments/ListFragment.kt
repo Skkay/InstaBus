@@ -1,4 +1,4 @@
-package fr.skkay.instabus
+package fr.skkay.instabus.ui.main.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -6,6 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import fr.skkay.instabus.R
+import fr.skkay.instabus.adapters.StationAdapter
+import fr.skkay.instabus.dataclass.StationItem
 import kotlinx.android.synthetic.main.fragment_list.*
 
 // TODO: Rename parameter arguments, choose names that match

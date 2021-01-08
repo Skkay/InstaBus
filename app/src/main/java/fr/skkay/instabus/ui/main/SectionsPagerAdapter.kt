@@ -1,12 +1,11 @@
 package fr.skkay.instabus.ui.main
 
 import android.content.Context
-import androidx.annotation.FloatRange
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import fr.skkay.instabus.ListFragment
-import fr.skkay.instabus.MapsFragment
+import fr.skkay.instabus.ui.main.fragments.ListFragment
+import fr.skkay.instabus.ui.main.fragments.MapsFragment
 import fr.skkay.instabus.R
 
 private val TAB_TITLES = arrayOf(
