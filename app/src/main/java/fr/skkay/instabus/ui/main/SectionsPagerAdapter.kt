@@ -13,23 +13,17 @@ private val TAB_TITLES = arrayOf(
         R.string.tab_text_2
 )
 
-/**
- * A [FragmentPagerAdapter] that returns a fragment corresponding to
- * one of the sections/tabs/pages.
- */
 class SectionsPagerAdapter(private val context: Context, fm: FragmentManager)
     : FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
-        var fragment: Fragment
-        fragment = when (position) {
-            0 -> ListFragment.newInstance("", "")
+        return when (position) {
+            0 -> ListFragment.newInstance()
             1 -> MapsFragment()
             else -> {
-                ListFragment.newInstance("", "")
+                ListFragment.newInstance()
             }
         }
-        return fragment
     }
 
     override fun getPageTitle(position: Int): CharSequence? {
