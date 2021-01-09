@@ -22,26 +22,20 @@ class ListFragment : Fragment() {
 
     private val baseURL: String = "http://barcelonaapi.marcpous.com/"
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
+    companion object {
+        @JvmStatic
+        fun newInstance() = ListFragment()
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val list = generateDummyList(100)
 
         // Loading bus stations from API
         val res = loadBusStationsFromAPI()
-        if ( res.isEmpty() ) {
-            Log.i("json_res", res)
-        }
-        else {
-            Log.i("json_res", "json response empty")
-        }
         val stationList = parseJSONBusStation(res)
 
         recycler_view.apply {
@@ -50,27 +44,8 @@ class ListFragment : Fragment() {
         }
     }
 
-    companion object {
-        /**
-         * @return A new instance of fragment ListFragment.
-         */
-        @JvmStatic
-        fun newInstance() = ListFragment()
-    }
-
-    private fun generateDummyList(size: Int): List<StationItem> {
-        val list = ArrayList<StationItem>()
-
-        for (i in 0 until size) {
-            val item = StationItem("Item $i")
-            list += item
-        }
-
-        return list
-    }
-
     private fun loadBusStationsFromAPI(): String {
-        var test_response = ""
+        var json_response = ""
         val thread = Thread(Runnable {
             try {
                 val retrofit = Retrofit.Builder().baseUrl(this.baseURL).addConverterFactory(MoshiConverterFactory.create()).build()
@@ -79,8 +54,7 @@ class ListFragment : Fragment() {
                 val stations = response.body()?.string()
 
                 if (stations != null) {
-                    test_response = stations
-                    Log.i("json_res", stations)
+                    json_response = stations
                 }
             }
             catch (e: Exception) {
@@ -89,7 +63,7 @@ class ListFragment : Fragment() {
         })
         thread.start()
         thread.join()
-        return test_response
+        return json_response
     }
 
     private fun parseJSONBusStation(json: String): List<StationItem> {
