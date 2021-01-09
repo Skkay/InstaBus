@@ -20,7 +20,7 @@ class StationAdapter(private val list: List<StationItem>) : RecyclerView.Adapter
     override fun onBindViewHolder(holder: StationViewHolder, position: Int) {
         val currentItem = list[position]
 
-        holder.stationName.text = currentItem.stationName
+        holder.stationName.text = currentItem.streetName
     }
 
     override fun getItemCount(): Int = list.size

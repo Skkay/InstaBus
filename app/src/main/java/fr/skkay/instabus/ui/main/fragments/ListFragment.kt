@@ -74,7 +74,17 @@ class ListFragment : Fragment() {
         val list = ArrayList<StationItem>()
         for (i in 0 until stations.length()) {
             val stationObject: JSONObject = stations.getJSONObject(i)
-            val stationItem = StationItem(stationObject.getString("street_name"))
+            val stationItem = StationItem(
+                stationObject.getString("id"),
+                stationObject.getString("street_name"),
+                stationObject.getString("city"),
+                stationObject.getString("utm_x"),
+                stationObject.getString("utm_y"),
+                stationObject.getString("lat"),
+                stationObject.getString("lon"),
+                stationObject.getString("furniture"),
+                stationObject.getString("buses")
+            )
             list += stationItem
         }
         return list
