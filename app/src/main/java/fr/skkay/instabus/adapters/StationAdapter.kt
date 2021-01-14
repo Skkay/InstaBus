@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import fr.skkay.instabus.R
 import fr.skkay.instabus.dataclass.StationItem
 
-class StationAdapter(private val list: List<StationItem>) : RecyclerView.Adapter<StationAdapter.StationViewHolder>() {
+class StationAdapter(private val list: List<StationItem>, private val listener: OnItemClickListener) : RecyclerView.Adapter<StationAdapter.StationViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StationViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.station_item, parent, false)
@@ -25,7 +25,22 @@ class StationAdapter(private val list: List<StationItem>) : RecyclerView.Adapter
 
     override fun getItemCount(): Int = list.size
 
-    class StationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class StationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         val stationName: TextView = itemView.findViewById(R.id.station_text_view)
+
+        init {
+            itemView.setOnClickListener(this)
+        }
+
+        override fun onClick(v: View?) {
+            val position = adapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                listener.onItemClick(position)
+            }
+        }
+    }
+
+    interface OnItemClickListener {
+        fun onItemClick(position: Int)
     }
 }

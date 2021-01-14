@@ -18,9 +18,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 
-class ListFragment : Fragment() {
+class ListFragment : Fragment(), StationAdapter.OnItemClickListener {
 
     private val baseURL: String = "http://barcelonaapi.marcpous.com/"
+    private var stationList: List<StationItem> = emptyList()
 
     companion object {
         @JvmStatic
@@ -36,12 +37,17 @@ class ListFragment : Fragment() {
 
         // Loading bus stations from API
         val res = loadBusStationsFromAPI()
-        val stationList = parseJSONBusStation(res)
+        stationList = parseJSONBusStation(res)
 
         recycler_view.apply {
             layoutManager = LinearLayoutManager(activity)
-            adapter = StationAdapter(stationList)
+            adapter = StationAdapter(stationList, this@ListFragment)
         }
+    }
+
+    override fun onItemClick(position: Int) {
+        val clickedItem = stationList[position]
+        Log.i("item_click", "item : ${clickedItem.streetName}")
     }
 
     private fun loadBusStationsFromAPI(): String {
