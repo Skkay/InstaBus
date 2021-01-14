@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -23,11 +24,6 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 
 class MapsFragment : Fragment() {
 
-    private val callback = OnMapReadyCallback { googleMap ->
-        val sydney = LatLng(-34.0, 151.0)
-        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-    }
     private val baseURL: String = "http://barcelonaapi.marcpous.com/"
 
     companion object {
@@ -42,6 +38,17 @@ class MapsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+
+        // Loading bus stations from API
+        val res = loadBusStationsFromAPI()
+        val stationList = parseJSONBusStation(res)
+
+        // Setting Google Maps options
+        val callback = OnMapReadyCallback { googleMap ->
+            for (station in stationList)  {
+                googleMap.addMarker(MarkerOptions().position(LatLng(station.lat.toDouble(), station.lon.toDouble())).title(station.streetName))
+            }
+        }
         mapFragment?.getMapAsync(callback)
     }
 
