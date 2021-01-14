@@ -1,5 +1,6 @@
 package fr.skkay.instabus.ui.main.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import fr.skkay.instabus.DetailStation
 import fr.skkay.instabus.R
 import fr.skkay.instabus.adapters.StationAdapter
 import fr.skkay.instabus.dataclass.StationItem
@@ -46,8 +48,21 @@ class ListFragment : Fragment(), StationAdapter.OnItemClickListener {
     }
 
     override fun onItemClick(position: Int) {
-        val clickedItem = stationList[position]
-        Log.i("item_click", "item : ${clickedItem.streetName}")
+        val clickedStation = stationList[position]
+        Log.i("item_click", "item : ${clickedStation.streetName}")
+
+        val intent = Intent(this.context, DetailStation::class.java).apply {
+            putExtra("id", clickedStation.id)
+            putExtra("streetName", clickedStation.streetName)
+            putExtra("city", clickedStation.city)
+            putExtra("utm_x", clickedStation.utm_x)
+            putExtra("utm_y", clickedStation.utm_y)
+            putExtra("lat", clickedStation.lat)
+            putExtra("lon", clickedStation.lon)
+            putExtra("furniture", clickedStation.furniture)
+            putExtra("buses", clickedStation.buses)
+        }
+        startActivity(intent)
     }
 
     private fun loadBusStationsFromAPI(): String {
