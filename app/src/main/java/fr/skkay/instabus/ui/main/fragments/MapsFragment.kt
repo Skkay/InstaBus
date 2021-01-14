@@ -47,6 +47,8 @@ class MapsFragment : Fragment() {
         val callback = OnMapReadyCallback { googleMap ->
             val defaultPlacement = LatLng(41.3750532, 2.1490632)
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultPlacement, 18f))
+            googleMap.setMaxZoomPreference(18.5f)
+            googleMap.setMinZoomPreference(12f)
 
             for (station in stationList)  {
                 googleMap.addMarker(MarkerOptions().position(LatLng(station.lat.toDouble(), station.lon.toDouble())).title(station.streetName))
