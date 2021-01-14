@@ -3,6 +3,7 @@ package fr.skkay.instabus.ui.main.fragments
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,12 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import fr.skkay.instabus.R
+import fr.skkay.instabus.dataclass.StationItem
+import fr.skkay.instabus.services.StationService
+import org.json.JSONArray
+import org.json.JSONObject
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 
 class MapsFragment : Fragment() {
 
@@ -21,6 +28,7 @@ class MapsFragment : Fragment() {
         googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
     }
+    private val baseURL: String = "http://barcelonaapi.marcpous.com/"
 
     companion object {
         @JvmStatic
@@ -35,5 +43,52 @@ class MapsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
+    }
+
+    private fun loadBusStationsFromAPI(): String {
+        var json_response = ""
+        val thread = Thread(Runnable {
+            try {
+                val retrofit = Retrofit.Builder().baseUrl(this.baseURL).addConverterFactory(
+                    MoshiConverterFactory.create()).build()
+                val service = retrofit.create(StationService::class.java)
+                val response = service.getStations().execute()
+                val stations = response.body()?.string()
+
+                if (stations != null) {
+                    json_response = stations
+                }
+            }
+            catch (e: Exception) {
+                Log.i("json_res", "Catch error :" + e.localizedMessage)
+            }
+        })
+        thread.start()
+        thread.join()
+        return json_response
+    }
+
+    private fun parseJSONBusStation(json: String): List<StationItem> {
+        val root: JSONObject = JSONObject(json)
+        val data: JSONObject = root.getJSONObject("data")
+        val stations: JSONArray = data.getJSONArray("tmbs")
+
+        val list = ArrayList<StationItem>()
+        for (i in 0 until stations.length()) {
+            val stationObject: JSONObject = stations.getJSONObject(i)
+            val stationItem = StationItem(
+                stationObject.getString("id"),
+                stationObject.getString("street_name"),
+                stationObject.getString("city"),
+                stationObject.getString("utm_x"),
+                stationObject.getString("utm_y"),
+                stationObject.getString("lat"),
+                stationObject.getString("lon"),
+                stationObject.getString("furniture"),
+                stationObject.getString("buses")
+            )
+            list += stationItem
+        }
+        return list
     }
 }
