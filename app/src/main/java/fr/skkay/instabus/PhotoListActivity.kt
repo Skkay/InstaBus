@@ -54,4 +54,8 @@ class PhotoListActivity : AppCompatActivity() {
     private fun getAllPhotos(): Cursor {
         return database.query(PhotoContract.PhotoEntry.TABLE_NAME, null, null, null, null, null, null)
     }
+
+    private fun getPhotosOfStation(station_id: String): Cursor {
+        return database.query(PhotoContract.PhotoEntry.TABLE_NAME, null, "stationId = ?", arrayOf(station_id), null, null, null)
+    }
 }
