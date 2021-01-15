@@ -1,6 +1,7 @@
 package fr.skkay.instabus
 
 import android.content.ContentValues
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.util.Log
@@ -29,26 +30,13 @@ class PhotoListActivity : AppCompatActivity() {
         val intent = intent
         Log.i("intent_result", "id : ${intent.getStringExtra("id")} ; streetName : ${intent.getStringExtra("streetName")}")
 
-        val dummyList = generateDummyList(100)
-
         photo_recycler_view.apply {
             layoutManager = LinearLayoutManager(this.context)
-            adapter = PhotoAdapter(dummyList)
+            adapter = PhotoAdapter(getAllPhotos())
             setHasFixedSize(true)
         }
 
         addPhotoToDatabase()
-    }
-
-    private fun generateDummyList(size: Int): List<PhotoItem> {
-        val list = ArrayList<PhotoItem>()
-
-        for (i in 0 until size) {
-            val item = PhotoItem("title $i", 0, Calendar.getInstance().getTime(), "id")
-            list += item
-        }
-
-        return list
     }
 
     private fun addPhotoToDatabase()
@@ -61,5 +49,9 @@ class PhotoListActivity : AppCompatActivity() {
         cv.put(PhotoContract.PhotoEntry.COLUMN_STATION_ID, item.station_id)
 
         database.insert(PhotoContract.PhotoEntry.TABLE_NAME, null, cv)
+    }
+
+    private fun getAllPhotos(): Cursor {
+        return database.query(PhotoContract.PhotoEntry.TABLE_NAME, null, null, null, null, null, null)
     }
 }

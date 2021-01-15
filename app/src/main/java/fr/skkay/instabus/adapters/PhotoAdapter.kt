@@ -1,5 +1,6 @@
 package fr.skkay.instabus.adapters
 
+import android.database.Cursor
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,11 +8,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import fr.skkay.instabus.R
-import fr.skkay.instabus.dataclass.PhotoItem
+import fr.skkay.instabus.contracts.PhotoContract
 import kotlinx.android.synthetic.main.photo_item.view.*
-import java.text.DateFormat
 
-class PhotoAdapter(private val list: List<PhotoItem>) : RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
+class PhotoAdapter(private val cursor: Cursor) : RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.photo_item, parent, false)
@@ -19,14 +19,14 @@ class PhotoAdapter(private val list: List<PhotoItem>) : RecyclerView.Adapter<Pho
     }
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
-        val currentItem = list[position]
+        if (!cursor.moveToPosition(position)) return
 
-        holder.imageView.setImageResource(currentItem.image)
-        holder.textView1.text = currentItem.title
-        holder.textView2.text = currentItem.datetime.toString()
+        holder.imageView.setImageResource(cursor.getInt(cursor.getColumnIndex(PhotoContract.PhotoEntry.COLUMN_IMAGE)))
+        holder.textView1.text = cursor.getString(cursor.getColumnIndex((PhotoContract.PhotoEntry.COLUMN_TITLE)))
+        holder.textView2.text = cursor.getString(cursor.getColumnIndex(PhotoContract.PhotoEntry.COLUMN_TIMESTAMP))
     }
 
-    override fun getItemCount(): Int = list.size
+    override fun getItemCount(): Int = cursor.count
 
     class PhotoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.image_view
