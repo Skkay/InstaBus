@@ -1,12 +1,21 @@
 package fr.skkay.instabus
 
+import android.Manifest
+import android.app.Activity
 import android.content.ContentValues
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fr.skkay.instabus.adapters.PhotoAdapter
 import fr.skkay.instabus.contracts.PhotoContract
 import fr.skkay.instabus.databaseHelper.PhotoDBHelper
@@ -18,6 +27,7 @@ import kotlin.collections.ArrayList
 
 class PhotoListActivity : AppCompatActivity() {
     lateinit var database: SQLiteDatabase
+    val REQUEST_IMAGE_CAPTURE = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +47,40 @@ class PhotoListActivity : AppCompatActivity() {
         }
 
         addPhotoToDatabase()
+
+
+        val fab: FloatingActionButton = findViewById(R.id.fab_add_photo)
+        fab.setOnClickListener { view ->
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE), 110)
+            } else {
+                takePicture()
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 110) {
+            if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                takePicture()
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            val image = data?.extras?.get("data") as Bitmap
+
+        }
+    }
+
+    private fun takePicture()
+    {
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
     }
 
     private fun addPhotoToDatabase()
