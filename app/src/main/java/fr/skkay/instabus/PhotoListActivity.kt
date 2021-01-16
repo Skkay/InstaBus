@@ -8,7 +8,9 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
+import android.graphics.Bitmap.CompressFormat
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +23,9 @@ import fr.skkay.instabus.contracts.PhotoContract
 import fr.skkay.instabus.databaseHelper.PhotoDBHelper
 import fr.skkay.instabus.dataclass.PhotoItem
 import kotlinx.android.synthetic.main.activity_photo_list.*
+import java.io.File
+import java.io.FileOutputStream
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -74,6 +79,15 @@ class PhotoListActivity : AppCompatActivity() {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             val image = data?.extras?.get("data") as Bitmap
 
+            val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.FRANCE).format(Date())
+            val path = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            val pictureFile = File(path, "IMG_$timeStamp.jpg")
+            val fos = FileOutputStream(pictureFile)
+
+            Log.i("save_image", "path : $path")
+            image.compress(CompressFormat.JPEG, 100, fos)
+            fos.flush()
+            fos.close()
         }
     }
 
