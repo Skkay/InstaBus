@@ -7,8 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import android.graphics.Bitmap
-import android.graphics.Bitmap.CompressFormat
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -16,6 +15,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fr.skkay.instabus.adapters.PhotoAdapter
@@ -24,7 +24,7 @@ import fr.skkay.instabus.databaseHelper.PhotoDBHelper
 import fr.skkay.instabus.dataclass.PhotoItem
 import kotlinx.android.synthetic.main.activity_photo_list.*
 import java.io.File
-import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -33,6 +33,7 @@ import kotlin.collections.ArrayList
 class PhotoListActivity : AppCompatActivity() {
     lateinit var database: SQLiteDatabase
     val REQUEST_IMAGE_CAPTURE = 1
+    var currentImagePath: File? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,24 +78,39 @@ class PhotoListActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-            val image = data?.extras?.get("data") as Bitmap
 
-            val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.FRANCE).format(Date())
-            val path = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-            val pictureFile = File(path, "IMG_$timeStamp.jpg")
-            val fos = FileOutputStream(pictureFile)
-
-            Log.i("save_image", "path : $path")
-            image.compress(CompressFormat.JPEG, 100, fos)
-            fos.flush()
-            fos.close()
         }
+    }
+
+    private fun getImageFile(): File {
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.FRANCE).format(Date())
+        val path = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val pictureFile = File(path, "IMG_$timeStamp.jpg")
+
+        currentImagePath = pictureFile.absoluteFile
+        return pictureFile
     }
 
     private fun takePicture()
     {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+
+        if (takePictureIntent.resolveActivity(packageManager) != null) {
+            var pictureFile: File? = null
+
+            try {
+                pictureFile = getImageFile()
+            }
+            catch (e: IOException) {
+                e.printStackTrace()
+            }
+
+            if (pictureFile != null) {
+                val imageUri: Uri = FileProvider.getUriForFile(this, "fr.skkay.instabus.provider", pictureFile)
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+            }
+        }
     }
 
     private fun addPhotoToDatabase()
@@ -117,3 +133,4 @@ class PhotoListActivity : AppCompatActivity() {
         return database.query(PhotoContract.PhotoEntry.TABLE_NAME, null, "stationId = ?", arrayOf(station_id), null, null, null)
     }
 }
+
