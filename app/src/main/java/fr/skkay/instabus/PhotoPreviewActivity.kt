@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 
 class PhotoPreviewActivity : AppCompatActivity() {
 
@@ -29,12 +30,18 @@ class PhotoPreviewActivity : AppCompatActivity() {
         imageView.setImageBitmap(bitmap)
 
         button.setOnClickListener { view ->
-            val resultIntent = Intent()
-            resultIntent.putExtra("image_title", editText.text.toString())
-            resultIntent.putExtra("image_path", imagePath)
+            val title = editText.text.toString()
+            if (!title.isNullOrBlank()) {
+                val resultIntent = Intent()
+                resultIntent.putExtra("image_title", title)
+                resultIntent.putExtra("image_path", imagePath)
 
-            setResult(Activity.RESULT_OK, resultIntent)
-            finish()
+                setResult(Activity.RESULT_OK, resultIntent)
+                finish()
+            }
+            else {
+                Toast.makeText(this, "Nom incorrect", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
