@@ -32,6 +32,7 @@ import kotlin.collections.ArrayList
 
 class PhotoListActivity : AppCompatActivity() {
     lateinit var database: SQLiteDatabase
+    lateinit var station_id: String
     val REQUEST_IMAGE_CAPTURE = 1
     val REQUEST_PREVIEW_CAPTURE = 2
     var currentImagePath: File? = null
@@ -46,10 +47,12 @@ class PhotoListActivity : AppCompatActivity() {
 
         val intent = intent
         Log.i("intent_result", "id : ${intent.getStringExtra("id")} ; streetName : ${intent.getStringExtra("streetName")}")
+        station_id = intent.getStringExtra("id")!!
 
         photo_recycler_view.apply {
             layoutManager = LinearLayoutManager(this.context)
-            adapter = PhotoAdapter(getAllPhotos())
+            //adapter = PhotoAdapter(getAllPhotos())
+            adapter = PhotoAdapter(getPhotosOfStation(station_id))
             setHasFixedSize(true)
         }
 
@@ -82,9 +85,9 @@ class PhotoListActivity : AppCompatActivity() {
         }
 
         if (requestCode == REQUEST_PREVIEW_CAPTURE && resultCode == Activity.RESULT_OK) {
-            val title = data?.getStringExtra("image_title")
-            val path = data?.getStringExtra("image_path")
-            addPhotoToDatabase(title!!, path!!)
+            val title = data?.getStringExtra("image_title")!!
+            val path = data?.getStringExtra("image_path")!!
+            addPhotoToDatabase(title, path, station_id)
         }
     }
 
@@ -127,12 +130,12 @@ class PhotoListActivity : AppCompatActivity() {
         startActivityForResult(previewPictureIntent, REQUEST_PREVIEW_CAPTURE)
     }
 
-    private fun addPhotoToDatabase(title: String, path: String)
+    private fun addPhotoToDatabase(title: String, path: String, station_id: String)
     {
         val cv = ContentValues()
         cv.put(PhotoContract.PhotoEntry.COLUMN_TITLE, title)
         cv.put(PhotoContract.PhotoEntry.COLUMN_IMAGE, path)
-        cv.put(PhotoContract.PhotoEntry.COLUMN_STATION_ID, "id")
+        cv.put(PhotoContract.PhotoEntry.COLUMN_STATION_ID, station_id)
 
         database.insert(PhotoContract.PhotoEntry.TABLE_NAME, null, cv)
     }
