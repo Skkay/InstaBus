@@ -1,6 +1,7 @@
 package fr.skkay.instabus.adapters
 
 import android.database.Cursor
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +22,7 @@ class PhotoAdapter(private val cursor: Cursor) : RecyclerView.Adapter<PhotoAdapt
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
         if (!cursor.moveToPosition(position)) return
 
-        holder.imageView.setImageResource(cursor.getInt(cursor.getColumnIndex(PhotoContract.PhotoEntry.COLUMN_IMAGE)))
+        holder.imageView.setImageBitmap(BitmapFactory.decodeFile(cursor.getString(cursor.getColumnIndex(PhotoContract.PhotoEntry.COLUMN_IMAGE))))
         holder.textView1.text = cursor.getString(cursor.getColumnIndex((PhotoContract.PhotoEntry.COLUMN_TITLE)))
         holder.textView2.text = cursor.getString(cursor.getColumnIndex(PhotoContract.PhotoEntry.COLUMN_TIMESTAMP))
     }

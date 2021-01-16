@@ -8,7 +8,7 @@ import fr.skkay.instabus.contracts.PhotoContract
 class PhotoDBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
         private const val DATABASE_NAME = "photoList.db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 2
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -16,7 +16,7 @@ class PhotoDBHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME
                 "CREATE TABLE ${PhotoContract.PhotoEntry.TABLE_NAME} (" +
                     "${PhotoContract.PhotoEntry._ID} INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "${PhotoContract.PhotoEntry.COLUMN_TITLE} TEXT NOT NULL, " +
-                    "${PhotoContract.PhotoEntry.COLUMN_IMAGE} INTEGER NOT NULL, " +
+                    "${PhotoContract.PhotoEntry.COLUMN_IMAGE} TEXT NOT NULL, " +
                     "${PhotoContract.PhotoEntry.COLUMN_TIMESTAMP} TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
                     "${PhotoContract.PhotoEntry.COLUMN_STATION_ID} TEXT NOT NULL" +
                 ");"

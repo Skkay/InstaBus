@@ -4,7 +4,7 @@ import java.util.Date
 
 data class PhotoItem (
     val title: String,
-    val image: Int,
+    val image: String,
     val datetime: Date,
     val station_id: String
 )
