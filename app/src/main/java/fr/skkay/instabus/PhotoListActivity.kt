@@ -33,6 +33,7 @@ import kotlin.collections.ArrayList
 class PhotoListActivity : AppCompatActivity() {
     lateinit var database: SQLiteDatabase
     val REQUEST_IMAGE_CAPTURE = 1
+    val REQUEST_PREVIEW_CAPTURE = 2
     var currentImagePath: File? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +53,6 @@ class PhotoListActivity : AppCompatActivity() {
             setHasFixedSize(true)
         }
 
-        addPhotoToDatabase()
 
 
         val fab: FloatingActionButton = findViewById(R.id.fab_add_photo)
@@ -78,7 +78,13 @@ class PhotoListActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            previewPicture()
+        }
 
+        if (requestCode == REQUEST_PREVIEW_CAPTURE && resultCode == Activity.RESULT_OK) {
+            val title = data?.getStringExtra("image_title")
+            val path = data?.getStringExtra("image_path")
+            addPhotoToDatabase(title!!, path!!)
         }
     }
 
@@ -113,14 +119,20 @@ class PhotoListActivity : AppCompatActivity() {
         }
     }
 
-    private fun addPhotoToDatabase()
+    private fun previewPicture()
     {
-        val item = PhotoItem("title", 0, Calendar.getInstance().getTime(), "id") // will be camera result
+        val previewPictureIntent = Intent(this, PhotoPreviewActivity::class.java)
+        previewPictureIntent.putExtra("image_path", currentImagePath.toString())
 
+        startActivityForResult(previewPictureIntent, REQUEST_PREVIEW_CAPTURE)
+    }
+
+    private fun addPhotoToDatabase(title: String, path: String)
+    {
         val cv = ContentValues()
-        cv.put(PhotoContract.PhotoEntry.COLUMN_TITLE, item.title)
-        cv.put(PhotoContract.PhotoEntry.COLUMN_IMAGE, item.image)
-        cv.put(PhotoContract.PhotoEntry.COLUMN_STATION_ID, item.station_id)
+        cv.put(PhotoContract.PhotoEntry.COLUMN_TITLE, title)
+        cv.put(PhotoContract.PhotoEntry.COLUMN_IMAGE, path)
+        cv.put(PhotoContract.PhotoEntry.COLUMN_STATION_ID, "id")
 
         database.insert(PhotoContract.PhotoEntry.TABLE_NAME, null, cv)
     }
@@ -133,4 +145,3 @@ class PhotoListActivity : AppCompatActivity() {
         return database.query(PhotoContract.PhotoEntry.TABLE_NAME, null, "stationId = ?", arrayOf(station_id), null, null, null)
     }
 }
-

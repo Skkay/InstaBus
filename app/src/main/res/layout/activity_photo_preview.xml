@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PhotoPreviewActivity">
+
+    <ImageView
+        android:id="@+id/preview_image"
+        android:layout_width="350dp"
+        android:layout_height="466dp"
+        android:layout_marginTop="30dp"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:id="@+id/edit_text_image_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/preview_image"
+        android:hint="Titre "/>
+
+    <Button
+        android:id="@+id/button_set_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/edit_text_image_title"
+        android:text="OK" />
+
+</RelativeLayout>
