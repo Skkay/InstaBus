@@ -11,7 +11,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -21,56 +20,49 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fr.skkay.instabus.adapters.PhotoAdapter
 import fr.skkay.instabus.contracts.PhotoContract
 import fr.skkay.instabus.databaseHelper.PhotoDBHelper
-import fr.skkay.instabus.dataclass.PhotoItem
 import kotlinx.android.synthetic.main.activity_photo_list.*
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
-
 
 class PhotoListActivity : AppCompatActivity() {
     lateinit var database: SQLiteDatabase
     lateinit var station_id: String
+    lateinit var currentImagePath: File
+
     val REQUEST_IMAGE_CAPTURE = 1
     val REQUEST_PREVIEW_CAPTURE = 2
-    var currentImagePath: File? = null
+    val REQUEST_PERMISSION_CAPTURE = 110
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photo_list)
 
-        // Database
         val dbHelper = PhotoDBHelper(this)
         database = dbHelper.writableDatabase
-
-        val intent = intent
-        Log.i("intent_result", "id : ${intent.getStringExtra("id")} ; streetName : ${intent.getStringExtra("streetName")}")
         station_id = intent.getStringExtra("id")!!
-
-        photo_recycler_view.apply {
-            layoutManager = LinearLayoutManager(this.context)
-            //adapter = PhotoAdapter(getAllPhotos())
-            adapter = PhotoAdapter(getPhotosOfStation(station_id))
-            setHasFixedSize(true)
-        }
-
-
 
         val fab: FloatingActionButton = findViewById(R.id.fab_add_photo)
         fab.setOnClickListener { view ->
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE), 110)
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_PERMISSION_CAPTURE)
             } else {
                 takePicture()
             }
+        }
+
+        photo_recycler_view.apply {
+            layoutManager = LinearLayoutManager(this.context)
+            adapter = PhotoAdapter(getPhotosOfStation(station_id))
+            setHasFixedSize(true)
         }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 110) {
+
+        if (requestCode == REQUEST_PERMISSION_CAPTURE) {
             if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 takePicture()
             }
@@ -97,11 +89,11 @@ class PhotoListActivity : AppCompatActivity() {
         val pictureFile = File(path, "IMG_$timeStamp.jpg")
 
         currentImagePath = pictureFile.absoluteFile
+
         return pictureFile
     }
 
-    private fun takePicture()
-    {
+    private fun takePicture() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
         if (takePictureIntent.resolveActivity(packageManager) != null) {
@@ -122,16 +114,14 @@ class PhotoListActivity : AppCompatActivity() {
         }
     }
 
-    private fun previewPicture()
-    {
+    private fun previewPicture() {
         val previewPictureIntent = Intent(this, PhotoPreviewActivity::class.java)
         previewPictureIntent.putExtra("image_path", currentImagePath.toString())
 
         startActivityForResult(previewPictureIntent, REQUEST_PREVIEW_CAPTURE)
     }
 
-    private fun addPhotoToDatabase(title: String, path: String, station_id: String)
-    {
+    private fun addPhotoToDatabase(title: String, path: String, station_id: String) {
         val cv = ContentValues()
         cv.put(PhotoContract.PhotoEntry.COLUMN_TITLE, title)
         cv.put(PhotoContract.PhotoEntry.COLUMN_IMAGE, path)

@@ -13,7 +13,6 @@ import fr.skkay.instabus.contracts.PhotoContract
 import kotlinx.android.synthetic.main.photo_item.view.*
 
 class PhotoAdapter(private val cursor: Cursor) : RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.photo_item, parent, false)
         return PhotoViewHolder(itemView)

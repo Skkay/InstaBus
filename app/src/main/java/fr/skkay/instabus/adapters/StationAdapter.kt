@@ -9,12 +9,9 @@ import fr.skkay.instabus.R
 import fr.skkay.instabus.dataclass.StationItem
 
 class StationAdapter(private val list: List<StationItem>, private val listener: OnItemClickListener) : RecyclerView.Adapter<StationAdapter.StationViewHolder>() {
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StationViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.station_item, parent, false)
-        return StationViewHolder(
-            itemView
-        )
+        return StationViewHolder(itemView)
     }
 
     override fun onBindViewHolder(holder: StationViewHolder, position: Int) {

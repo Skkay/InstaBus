@@ -19,9 +19,7 @@ import org.json.JSONObject
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
-
 class ListFragment : Fragment(), StationAdapter.OnItemClickListener {
-
     private val baseURL: String = "http://barcelonaapi.marcpous.com/"
     private var stationList: List<StationItem> = emptyList()
 
