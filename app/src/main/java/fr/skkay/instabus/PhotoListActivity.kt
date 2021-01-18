@@ -146,6 +146,20 @@ class PhotoListActivity : AppCompatActivity() {
     }
 
     private fun removePhotoFromDatabase(id: Long) {
+        val photoCursor = database.query(PhotoContract.PhotoEntry.TABLE_NAME, null, "${PhotoContract.PhotoEntry._ID} = ?", arrayOf(id.toString()), null, null, null)
+
+        try {
+            photoCursor.moveToFirst()
+            val photoPath = photoCursor.getString(photoCursor.getColumnIndex(PhotoContract.PhotoEntry.COLUMN_IMAGE))
+            File(photoPath).delete()
+        }
+        catch (e: IOException) {
+            Toast.makeText(this, "La photo n'a pas pu être supprimée des fichiers", Toast.LENGTH_LONG).show()
+        }
+        finally {
+            photoCursor.close()
+        }
+
         database.delete(PhotoContract.PhotoEntry.TABLE_NAME, "${PhotoContract.PhotoEntry._ID} = ?", arrayOf(id.toString()))
     }
 
