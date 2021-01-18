@@ -15,7 +15,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import fr.skkay.instabus.adapters.PhotoAdapter
 import fr.skkay.instabus.contracts.PhotoContract
@@ -51,6 +53,17 @@ class PhotoListActivity : AppCompatActivity() {
                 takePicture()
             }
         }
+
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder) : Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                removePhotoFromDatabase(viewHolder.itemView.tag as Long)
+                refreshPhotoList()
+            }
+        }).attachToRecyclerView(photo_recycler_view)
 
         refreshPhotoList()
     }
@@ -125,6 +138,10 @@ class PhotoListActivity : AppCompatActivity() {
         cv.put(PhotoContract.PhotoEntry.COLUMN_STATION_ID, station_id)
 
         database.insert(PhotoContract.PhotoEntry.TABLE_NAME, null, cv)
+    }
+
+    private fun removePhotoFromDatabase(id: Long) {
+        database.delete(PhotoContract.PhotoEntry.TABLE_NAME, "${PhotoContract.PhotoEntry._ID} = ?", arrayOf(id.toString()))
     }
 
     private fun refreshPhotoList() {

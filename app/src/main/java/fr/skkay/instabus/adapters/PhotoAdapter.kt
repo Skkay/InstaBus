@@ -24,6 +24,7 @@ class PhotoAdapter(private val cursor: Cursor) : RecyclerView.Adapter<PhotoAdapt
         holder.imageView.setImageBitmap(BitmapFactory.decodeFile(cursor.getString(cursor.getColumnIndex(PhotoContract.PhotoEntry.COLUMN_IMAGE))))
         holder.textView1.text = cursor.getString(cursor.getColumnIndex((PhotoContract.PhotoEntry.COLUMN_TITLE)))
         holder.textView2.text = cursor.getString(cursor.getColumnIndex(PhotoContract.PhotoEntry.COLUMN_TIMESTAMP))
+        holder.itemView.tag = cursor.getLong(cursor.getColumnIndex(PhotoContract.PhotoEntry._ID))
     }
 
     override fun getItemCount(): Int = cursor.count
