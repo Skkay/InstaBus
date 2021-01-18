@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import fr.skkay.instabus.R
 import fr.skkay.instabus.contracts.PhotoContract
 import kotlinx.android.synthetic.main.photo_item.view.*
+import java.io.File
 
 class PhotoAdapter(private val cursor: Cursor) : RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
@@ -21,7 +22,13 @@ class PhotoAdapter(private val cursor: Cursor) : RecyclerView.Adapter<PhotoAdapt
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
         if (!cursor.moveToPosition(position)) return
 
-        holder.imageView.setImageBitmap(BitmapFactory.decodeFile(cursor.getString(cursor.getColumnIndex(PhotoContract.PhotoEntry.COLUMN_IMAGE))))
+        val imagePath = cursor.getString(cursor.getColumnIndex(PhotoContract.PhotoEntry.COLUMN_IMAGE))
+        if (File(imagePath).exists()) {
+            holder.imageView.setImageBitmap(BitmapFactory.decodeFile(imagePath))
+        }
+        else {
+            holder.imageView.setImageResource(R.drawable.ic_baseline_cancel_24)
+        }
         holder.textView1.text = cursor.getString(cursor.getColumnIndex((PhotoContract.PhotoEntry.COLUMN_TITLE)))
         holder.textView2.text = cursor.getString(cursor.getColumnIndex(PhotoContract.PhotoEntry.COLUMN_TIMESTAMP))
         holder.itemView.tag = cursor.getLong(cursor.getColumnIndex(PhotoContract.PhotoEntry._ID))
