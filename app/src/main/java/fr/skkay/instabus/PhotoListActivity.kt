@@ -2,6 +2,7 @@ package fr.skkay.instabus
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.ContentValues
 import android.content.Intent
@@ -62,8 +63,20 @@ class PhotoListActivity : AppCompatActivity() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                removePhotoFromDatabase(viewHolder.itemView.tag as Long)
-                refreshPhotoList()
+                val builder = AlertDialog.Builder(photo_recycler_view.context)
+                builder.setCancelable(true)
+                builder.setTitle("Attention")
+                builder.setMessage("Confirmer la suppression ?")
+                builder.setPositiveButton("Oui") { _, _ ->
+                    run {
+                        removePhotoFromDatabase(viewHolder.itemView.tag as Long)
+                        refreshPhotoList()
+                    }
+                }
+                builder.setNegativeButton("Non") { _, _ -> refreshPhotoList() }
+
+                val dialog = builder.create()
+                dialog.show()
             }
         }).attachToRecyclerView(photo_recycler_view)
 
