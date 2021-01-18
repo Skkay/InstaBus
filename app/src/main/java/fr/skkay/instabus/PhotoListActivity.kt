@@ -52,13 +52,9 @@ class PhotoListActivity : AppCompatActivity() {
             }
         }
 
-        photo_recycler_view.apply {
-            layoutManager = LinearLayoutManager(this.context)
-            adapter = PhotoAdapter(getPhotosOfStation(station_id))
-            setHasFixedSize(true)
-        }
+        refreshPhotoList()
     }
-
+    
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
@@ -80,6 +76,7 @@ class PhotoListActivity : AppCompatActivity() {
             val title = data?.getStringExtra("image_title")!!
             val path = data?.getStringExtra("image_path")!!
             addPhotoToDatabase(title, path, station_id)
+            refreshPhotoList()
         }
     }
 
@@ -128,6 +125,14 @@ class PhotoListActivity : AppCompatActivity() {
         cv.put(PhotoContract.PhotoEntry.COLUMN_STATION_ID, station_id)
 
         database.insert(PhotoContract.PhotoEntry.TABLE_NAME, null, cv)
+    }
+
+    private fun refreshPhotoList() {
+        photo_recycler_view.apply {
+            layoutManager = LinearLayoutManager(this.context)
+            adapter = PhotoAdapter(getPhotosOfStation(station_id))
+            setHasFixedSize(true)
+        }
     }
 
     private fun getAllPhotos(): Cursor {
