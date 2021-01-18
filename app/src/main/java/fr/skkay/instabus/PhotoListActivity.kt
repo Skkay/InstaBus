@@ -93,6 +93,9 @@ class PhotoListActivity : AppCompatActivity() {
             addPhotoToDatabase(title, path, station_id)
             refreshPhotoList()
         }
+        else if (requestCode == REQUEST_PREVIEW_CAPTURE && resultCode == Activity.RESULT_CANCELED) {
+            removePhotoFromStorage(currentImagePath.toString())
+        }
     }
 
     private fun getImageFile(): File {
@@ -107,7 +110,7 @@ class PhotoListActivity : AppCompatActivity() {
 
     private fun takePicture() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        
+
         try {
             var pictureFile: File? = null
 
@@ -147,20 +150,23 @@ class PhotoListActivity : AppCompatActivity() {
 
     private fun removePhotoFromDatabase(id: Long) {
         val photoCursor = database.query(PhotoContract.PhotoEntry.TABLE_NAME, null, "${PhotoContract.PhotoEntry._ID} = ?", arrayOf(id.toString()), null, null, null)
+        photoCursor.moveToFirst()
 
+        val photoPath = photoCursor.getString(photoCursor.getColumnIndex(PhotoContract.PhotoEntry.COLUMN_IMAGE))
+        removePhotoFromStorage(photoPath)
+
+        photoCursor.close()
+
+        database.delete(PhotoContract.PhotoEntry.TABLE_NAME, "${PhotoContract.PhotoEntry._ID} = ?", arrayOf(id.toString()))
+    }
+
+    private fun removePhotoFromStorage(path: String) {
         try {
-            photoCursor.moveToFirst()
-            val photoPath = photoCursor.getString(photoCursor.getColumnIndex(PhotoContract.PhotoEntry.COLUMN_IMAGE))
-            File(photoPath).delete()
+            File(path).delete()
         }
         catch (e: IOException) {
             Toast.makeText(this, "La photo n'a pas pu être supprimée des fichiers", Toast.LENGTH_LONG).show()
         }
-        finally {
-            photoCursor.close()
-        }
-
-        database.delete(PhotoContract.PhotoEntry.TABLE_NAME, "${PhotoContract.PhotoEntry._ID} = ?", arrayOf(id.toString()))
     }
 
     private fun refreshPhotoList() {
