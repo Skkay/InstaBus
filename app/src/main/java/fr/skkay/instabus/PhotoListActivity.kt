@@ -2,6 +2,7 @@ package fr.skkay.instabus
 
 import android.Manifest
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,6 +12,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -105,8 +107,8 @@ class PhotoListActivity : AppCompatActivity() {
 
     private fun takePicture() {
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-
-        if (takePictureIntent.resolveActivity(packageManager) != null) {
+        
+        try {
             var pictureFile: File? = null
 
             try {
@@ -121,6 +123,9 @@ class PhotoListActivity : AppCompatActivity() {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
             }
+        }
+        catch (e: ActivityNotFoundException) {
+            Toast.makeText(this, "Application non trouvée", Toast.LENGTH_SHORT).show()
         }
     }
 
