@@ -1,4 +1,5 @@
 package fr.skkay.instabus.ui.main.fragments
+
 import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
@@ -7,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -60,13 +62,18 @@ class MapsFragment : Fragment() {
             else {
                 val task: Task<Location> = fusedLocationProviderClient.getLastLocation()
                 task.addOnSuccessListener { location ->
-                    var loc = LatLng(41.3750532, 2.1490632)                                   // Default localization
-                    if (location != null) loc = LatLng(location.latitude, location.longitude) // Localization if available
-
+                    var loc = LatLng(41.3750532, 2.1490632) // Default localization
+                    if (location == null) {
+                        Toast.makeText(context, "Impossible de récupérer la position GPS", Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        loc = LatLng(location.latitude, location.longitude)
+                    }
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 18f))
                 }
-                task.addOnFailureListener { exception ->
-                    val loc = LatLng(41.3750532, 2.1490632) // Default placement
+                task.addOnFailureListener {
+                    Toast.makeText(context, "Impossible de récupérer la position GPS", Toast.LENGTH_LONG).show();
+                    val loc = LatLng(41.3750532, 2.1490632) // Default localization
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 18f))
                 }
             }
