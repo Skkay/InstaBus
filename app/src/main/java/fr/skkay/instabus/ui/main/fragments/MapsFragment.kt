@@ -1,17 +1,22 @@
 package fr.skkay.instabus.ui.main.fragments
-
-import androidx.fragment.app.Fragment
-
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.tasks.Task
 import fr.skkay.instabus.R
 import fr.skkay.instabus.dataclass.StationItem
 import fr.skkay.instabus.services.StationService
@@ -22,6 +27,9 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 
 class MapsFragment : Fragment() {
     private val baseURL: String = "http://barcelonaapi.marcpous.com/"
+    private val REQUEST_CODE = 101
+
+    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     companion object {
         @JvmStatic
@@ -40,10 +48,29 @@ class MapsFragment : Fragment() {
         val res = loadBusStationsFromAPI()
         val stationList = parseJSONBusStation(res)
 
+        context?.let {
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(it)
+        }
+
         // Setting Google Maps options
         val callback = OnMapReadyCallback { googleMap ->
-            val defaultPlacement = LatLng(41.3750532, 2.1490632)
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultPlacement, 18f))
+            if (context?.let { ActivityCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) } != PackageManager.PERMISSION_GRANTED && context?.let { ActivityCompat.checkSelfPermission(it, Manifest.permission.ACCESS_COARSE_LOCATION) } != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE)
+            }
+            else {
+                val task: Task<Location> = fusedLocationProviderClient.getLastLocation()
+                task.addOnSuccessListener { location ->
+                    var loc = LatLng(41.3750532, 2.1490632)                                   // Default localization
+                    if (location != null) loc = LatLng(location.latitude, location.longitude) // Localization if available
+
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 18f))
+                }
+                task.addOnFailureListener { exception ->
+                    val loc = LatLng(41.3750532, 2.1490632) // Default placement
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 18f))
+                }
+            }
+
             googleMap.setMaxZoomPreference(18.5f)
             googleMap.setMinZoomPreference(12f)
 
