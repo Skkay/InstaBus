@@ -24,9 +24,9 @@ class MainActivity : AppCompatActivity() {
             tabs.setupWithViewPager(viewPager)
         }
         else {
-            Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.internet_connection_error), Toast.LENGTH_SHORT).show();
             val textView = findViewById<TextView>(R.id.textview_network_issue)
-            textView.text = "Aucune connexion Internet"
+            textView.text = getString(R.string.internet_connection_error)
         }
     }
 

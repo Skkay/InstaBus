@@ -64,7 +64,7 @@ class MapsFragment : Fragment() {
                 task.addOnSuccessListener { location ->
                     var loc = LatLng(41.3750532, 2.1490632) // Default localization
                     if (location == null) {
-                        Toast.makeText(context, "Impossible de récupérer la position GPS", Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, getString(R.string.gps_position_error), Toast.LENGTH_LONG).show();
                     }
                     else {
                         loc = LatLng(location.latitude, location.longitude)
@@ -72,7 +72,7 @@ class MapsFragment : Fragment() {
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 18f))
                 }
                 task.addOnFailureListener {
-                    Toast.makeText(context, "Impossible de récupérer la position GPS", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, getString(R.string.gps_position_error), Toast.LENGTH_LONG).show();
                     val loc = LatLng(41.3750532, 2.1490632) // Default localization
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 18f))
                 }

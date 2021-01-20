@@ -35,7 +35,7 @@ class PhotoPreviewActivity : AppCompatActivity() {
                 finish()
             }
             else {
-                Toast.makeText(this, "Nom incorrect", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.bad_image_name), Toast.LENGTH_SHORT).show()
             }
         }
     }

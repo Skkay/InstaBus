@@ -65,15 +65,15 @@ class PhotoListActivity : AppCompatActivity() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val builder = AlertDialog.Builder(photo_recycler_view.context)
                 builder.setCancelable(true)
-                builder.setTitle("Attention")
-                builder.setMessage("Confirmer la suppression ?")
-                builder.setPositiveButton("Oui") { _, _ ->
+                builder.setTitle(getString(R.string.alert_title_warning))
+                builder.setMessage(getString(R.string.alert_confirm_delete))
+                builder.setPositiveButton(getString(R.string.yes)) { _, _ ->
                     run {
                         removePhotoFromDatabase(viewHolder.itemView.tag as Long)
                         refreshPhotoList()
                     }
                 }
-                builder.setNegativeButton("Non") { _, _ -> refreshPhotoList() }
+                builder.setNegativeButton(getString(R.string.no)) { _, _ -> refreshPhotoList() }
 
                 val dialog = builder.create()
                 dialog.show()
@@ -141,7 +141,7 @@ class PhotoListActivity : AppCompatActivity() {
             }
         }
         catch (e: ActivityNotFoundException) {
-            Toast.makeText(this, "Application non trouvée", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.application_not_found), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -178,7 +178,7 @@ class PhotoListActivity : AppCompatActivity() {
             File(path).delete()
         }
         catch (e: IOException) {
-            Toast.makeText(this, "La photo n'a pas pu être supprimée des fichiers", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.image_delete_error), Toast.LENGTH_LONG).show()
         }
     }
 

@@ -1,7 +1,22 @@
 <resources>
     <string name="app_name">InstaBus</string>
-    <string name="tab_text_1">Tab 1</string>
-    <string name="tab_text_2">Tab 2</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+    <string name="cancel">Annuler</string>
+
+    <!-- Tab -->
+    <string name="tab_text_1">Stations</string>
+    <string name="tab_text_2">Carte</string>
+
+    <!-- Toast -->
+    <string name="gps_position_error">Impossible de récupérer la position GPS</string>
+    <string name="internet_connection_error">Aucune connexion Internet</string>
+    <string name="application_not_found">Application non trouvée</string>
+    <string name="image_delete_error">La photo n\'a pas pu être supprimée des fichiers</string>
+    <string name="bad_image_name">Nom incorrect</string>
+    
+    <!-- AlertDialog -->
+    <string name="alert_title_warning">Attention</string>
+    <string name="alert_confirm_delete">Confirmer la suppression ?</string>
 </resources>
